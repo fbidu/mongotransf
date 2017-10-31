@@ -9,6 +9,7 @@ import sys
 
 try:
     from pymongo.uri_parser import parse_uri
+    from pymongo.errors import InvalidURI
 except ImportError:
     print("Please install PyMongo")
     sys.exit(1)
@@ -39,9 +40,8 @@ def main(origin, destination, collection=None):
     try:
         origin = parse_uri(origin)
         destination = parse_uri(destination)
-    except:
-        print("Mongo URL parsing error!")
-        raise
+    except InvalidURI:
+        raise Exception("Mongo URL parsing error!")
 
     # Defining the destination path for the dump
     dump_folder = "dump_" + origin['database']
@@ -111,6 +111,7 @@ def main(origin, destination, collection=None):
     mongodump = subprocess.Popen(mongodump_command,
                                  shell=True,
                                  stdout=subprocess.PIPE)
+
     # Waiting the process to finish
     mongodump.wait()
 
